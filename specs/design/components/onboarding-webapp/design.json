@@ -7,11 +7,57 @@
   "appPath": "onboarding-webapp",
   "entrypoint": "deployment/web-application",
   "exposure": "internet",
-  "dependencies": [
-    { "kind": "component", "name": "onboarding-api", "description": "Calls the onboarding API for new hires, checklist tasks, the template and notifications." },
-    { "kind": "platform-resource", "name": "user-auth", "resourceType": "thunder-app", "description": "Signs in HR Coordinator, IT Staff, Facilities Staff and New Hire users via the platform IDP." }
+  "stories": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12
   ],
   "description": "The single web app for the onboarding tracker: HR Coordinator screens (add new hire, edit template, cross-department progress), department task queues for IT and Facilities staff, and a read-only checklist view for new hires. Does not send email or store data of its own — all state lives in onboarding-api.",
-  "stories": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
-  "skillsPinned": ["wireframes", "react-webapp", "astryx-design-system", "thunder-authentication"]
+  "dependencies": [
+    {
+      "kind": "component",
+      "name": "onboarding-api",
+      "description": "Calls the onboarding API for new hires, checklist tasks, the template and notifications.",
+      "wiring": {
+        "endpoint": {
+          "component": "track-each-hire627-onboarding-api",
+          "name": "http",
+          "visibility": "project",
+          "envBindings": {
+            "address": "ONBOARDING_API_URL"
+          }
+        }
+      }
+    },
+    {
+      "kind": "platform-resource",
+      "name": "user-auth",
+      "description": "Signs in HR Coordinator, IT Staff, Facilities Staff and New Hire users via the platform IDP.",
+      "resourceType": "thunder-app",
+      "wiring": {
+        "ref": "track-each-hire62-495cefb9",
+        "envBindings": {
+          "client_id": "USER_AUTH_CLIENT_ID",
+          "issuer": "USER_AUTH_ISSUER",
+          "jwks_url": "USER_AUTH_JWKS_URL",
+          "scopes": "USER_AUTH_SCOPES"
+        }
+      }
+    }
+  ],
+  "skillsPinned": [
+    "wireframes",
+    "react-webapp",
+    "astryx-design-system",
+    "thunder-authentication"
+  ]
 }
