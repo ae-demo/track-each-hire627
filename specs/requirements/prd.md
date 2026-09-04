@@ -34,31 +34,34 @@ mark tasks complete themselves.
 ## User Stories
 
 1. As an HR Coordinator, I want to add a new hire and have their standard
- onboarding checklist automatically generated across IT, HR and Facilities,
- so that nothing is missed.
+onboarding checklist automatically generated across IT, HR and Facilities,
+so that nothing is missed.
 2. As an IT Staff member, I want to see only the IT onboarding tasks assigned
- for each new hire, so that I know what needs doing without wading through
- other departments' work.
+for each new hire, so that I know what needs doing without wading through
+other departments' work.
 3. As a Facilities Staff member, I want to see only the Facilities onboarding
- tasks assigned for each new hire.
+tasks assigned for each new hire.
 4. As an HR Coordinator, I want to see and complete the HR-specific onboarding
- tasks for each new hire.
+tasks for each new hire.
 5. As an IT Staff member, I want to mark my assigned tasks complete, so that
- my progress is visible to the HR Coordinator.
+my progress is visible to the HR Coordinator.
 6. As a Facilities Staff member, I want to mark my assigned tasks complete, so
- that my progress is visible to the HR Coordinator.
+that my progress is visible to the HR Coordinator.
 7. As an HR Coordinator, I want to view overall onboarding progress for each
- new hire across all three departments, so that I can see at a glance what
- is outstanding.
+new hire across all three departments, so that I can see at a glance what
+is outstanding.
 8. As an IT Staff member, I want to be reminded when a task assigned to me
- becomes overdue, so that it does not fall through the cracks.
+becomes overdue, so that it does not fall through the cracks.
 9. As a Facilities Staff member, I want to be reminded when a task assigned to
- me becomes overdue.
+me becomes overdue.
 10. As an HR Coordinator, I want to be reminded when my own HR tasks become
- overdue, and escalated to when any IT or Facilities task for a new hire
- runs overdue, so that I can follow up.
+overdue, and escalated to when any IT or Facilities task for a new hire
+runs overdue, so that I can follow up.
 11. As a New Hire, I want to view my own onboarding checklist and see which
- items are done, in progress, or overdue, so that I know what to expect.
+items are done, in progress, or overdue, so that I know what to expect.
+12. As an HR Coordinator, I want to define and edit the standard checklist's
+tasks — which department owns each one and its due-date offset from the
+start date — so that the checklist stays current without a code change.
 
 ## Product Decisions
 
@@ -68,16 +71,18 @@ default).
 Staff and the HR Coordinator each own and complete only their own tasks for
 a given new hire.
 - Every new hire receives the same standard checklist template — task content
-is not customized per role or department at this time.
+is not customized per role or department at this time. The HR Coordinator
+maintains this template directly in the product: which tasks exist, which
+department owns each, and each one's due-date offset from the start date.
 - New hires have read-only visibility into their own checklist; they cannot
-create, edit or complete tasks. *assumed*
-- Reminders for overdue tasks are sent by email to the assigned staff member;
-the HR Coordinator additionally receives escalation emails for any overdue
-IT or Facilities task. *assumed*
+create, edit or complete tasks.
+- Reminders for overdue tasks are delivered as in-app notifications to the
+assigned staff member; the HR Coordinator additionally receives an in-app
+escalation notice for any overdue IT or Facilities task. No email channel is
+used.
 - Each checklist task carries a due date, set as a fixed number of days
 relative to the new hire's start date (defined once per template task); a
 task is "overdue" once its due date passes without being marked complete.
-*assumed*
 
 ## Out of Scope
 
@@ -91,9 +96,7 @@ underlying work.
 
 ## Open Questions
 
-1. What specific tasks belong on the standard onboarding checklist for each of
- IT, HR and Facilities, and what is each task's due-date offset from the
- start date?
+None outstanding.
 
 ## Further Notes
 
