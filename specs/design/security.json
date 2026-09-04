@@ -1,0 +1,58 @@
+{
+  "version": 1,
+  "coldStartRole": "New Hire",
+  "publicComponents": [],
+  "roles": [
+    {
+      "name": "New Hire",
+      "description": "Views their own onboarding checklist and its status.",
+      "stories": [11],
+      "grantedBy": "first sign-in",
+      "permissions": [
+        { "component": "onboarding-api", "actions": ["view own checklist"] },
+        { "component": "onboarding-webapp", "screens": ["My Checklist"] }
+      ]
+    },
+    {
+      "name": "IT Staff",
+      "description": "Works the IT onboarding task queue across all new hires and completes IT tasks.",
+      "stories": [2, 5, 8],
+      "grantedBy": "HR Coordinator",
+      "permissions": [
+        { "component": "onboarding-api", "actions": ["view IT tasks", "complete IT task"] },
+        { "component": "onboarding-webapp", "screens": ["My Tasks"] }
+      ]
+    },
+    {
+      "name": "Facilities Staff",
+      "description": "Works the Facilities onboarding task queue across all new hires and completes Facilities tasks.",
+      "stories": [3, 6, 9],
+      "grantedBy": "HR Coordinator",
+      "permissions": [
+        { "component": "onboarding-api", "actions": ["view Facilities tasks", "complete Facilities task"] },
+        { "component": "onboarding-webapp", "screens": ["My Tasks"] }
+      ]
+    },
+    {
+      "name": "HR Coordinator",
+      "description": "Adds new hires, manages the shared onboarding template, and views cross-team onboarding progress.",
+      "stories": [1, 4, 7, 10, 12],
+      "grantedBy": "HR Coordinator",
+      "permissions": [
+        { "component": "onboarding-api", "actions": ["manage new hires", "manage checklist template", "view all tasks", "complete HR task", "receive escalation notifications"] },
+        { "component": "onboarding-webapp", "screens": ["Dashboard", "New Hire", "Template", "Progress", "My Tasks"] }
+      ]
+    }
+  ],
+  "testUsers": [
+    { "username": "test-new-hire", "role": "New Hire" },
+    { "username": "test-it-staff", "role": "IT Staff" },
+    { "username": "test-facilities-staff", "role": "Facilities Staff" },
+    { "username": "test-hr-coordinator", "role": "HR Coordinator" }
+  ],
+  "thunder": {
+    "name": "Track Each Hire",
+    "type": "browser",
+    "scopes": "openid profile email group ou"
+  }
+}

@@ -1,0 +1,526 @@
+openapi: 3.0.3
+info:
+  title: Onboarding API
+  version: 0.1.0
+  description: Tracks new-hire onboarding tasks across IT, HR and Facilities.
+servers:
+  - url: /
+paths:
+  /new-hires:
+    parameters:
+      - $ref: '#/components/parameters/UserId'
+      - $ref: '#/components/parameters/UserRole'
+    get:
+      operationId: listNewHires
+      summary: List new hires
+      parameters:
+        - $ref: '#/components/parameters/Limit'
+        - $ref: '#/components/parameters/Offset'
+      responses:
+        '200':
+          description: page of new hires
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [count, data]
+                properties:
+                  count: { type: integer, description: total matching items }
+                  next: { type: string, nullable: true, description: relative URI of the next page }
+                  previous: { type: string, nullable: true, description: relative URI of the previous page }
+                  data:
+                    type: array
+                    items: { $ref: '#/components/schemas/NewHire' }
+        '401':
+          description: not authenticated
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '403':
+          description: not permitted
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+    post:
+      operationId: createNewHire
+      summary: Add a new hire and generate their checklist from the current template
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/NewHireInput' }
+      responses:
+        '201':
+          description: new hire created with checklist generated
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/NewHire' }
+        '400':
+          description: invalid input
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '401':
+          description: not authenticated
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '403':
+          description: not permitted
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+  /new-hires/{newHireId}:
+    parameters:
+      - $ref: '#/components/parameters/NewHireId'
+      - $ref: '#/components/parameters/UserId'
+      - $ref: '#/components/parameters/UserRole'
+    get:
+      operationId: getNewHire
+      summary: Get a new hire
+      responses:
+        '200':
+          description: the new hire
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/NewHire' }
+        '401':
+          description: not authenticated
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '403':
+          description: not permitted
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '404':
+          description: no such new hire
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+  /new-hires/{newHireId}/tasks:
+    parameters:
+      - $ref: '#/components/parameters/NewHireId'
+      - $ref: '#/components/parameters/UserId'
+      - $ref: '#/components/parameters/UserRole'
+    get:
+      operationId: listNewHireTasks
+      summary: List a new hire's checklist tasks, across or filtered by department
+      parameters:
+        - name: department
+          in: query
+          required: false
+          schema: { type: string, enum: [IT, HR, Facilities] }
+          description: filter to one department's tasks
+      responses:
+        '200':
+          description: the checklist
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [count, data]
+                properties:
+                  count: { type: integer, description: total matching items }
+                  next: { type: string, nullable: true, description: relative URI of the next page }
+                  previous: { type: string, nullable: true, description: relative URI of the previous page }
+                  data:
+                    type: array
+                    items: { $ref: '#/components/schemas/Task' }
+        '401':
+          description: not authenticated
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '403':
+          description: not permitted
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '404':
+          description: no such new hire
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+  /tasks:
+    parameters:
+      - $ref: '#/components/parameters/UserId'
+      - $ref: '#/components/parameters/UserRole'
+    get:
+      operationId: listTasks
+      summary: List checklist tasks across new hires, for a department queue or overall progress
+      parameters:
+        - name: department
+          in: query
+          required: false
+          schema: { type: string, enum: [IT, HR, Facilities] }
+          description: filter to one department's tasks
+        - name: status
+          in: query
+          required: false
+          schema: { type: string, enum: [pending, completed, overdue] }
+          description: filter by task status
+        - $ref: '#/components/parameters/Limit'
+        - $ref: '#/components/parameters/Offset'
+      responses:
+        '200':
+          description: page of tasks
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [count, data]
+                properties:
+                  count: { type: integer, description: total matching items }
+                  next: { type: string, nullable: true, description: relative URI of the next page }
+                  previous: { type: string, nullable: true, description: relative URI of the previous page }
+                  data:
+                    type: array
+                    items: { $ref: '#/components/schemas/Task' }
+        '401':
+          description: not authenticated
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '403':
+          description: not permitted
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+  /tasks/{taskId}:
+    parameters:
+      - $ref: '#/components/parameters/TaskId'
+      - $ref: '#/components/parameters/UserId'
+      - $ref: '#/components/parameters/UserRole'
+    get:
+      operationId: getTask
+      summary: Get a checklist task
+      responses:
+        '200':
+          description: the task
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Task' }
+        '401':
+          description: not authenticated
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '403':
+          description: not permitted
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '404':
+          description: no such task
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+  /tasks/{taskId}/complete:
+    parameters:
+      - $ref: '#/components/parameters/TaskId'
+      - $ref: '#/components/parameters/UserId'
+      - $ref: '#/components/parameters/UserRole'
+    post:
+      operationId: completeTask
+      summary: Mark a task complete
+      responses:
+        '200':
+          description: task marked completed
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Task' }
+        '401':
+          description: not authenticated
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '403':
+          description: not permitted (wrong department)
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '404':
+          description: no such task
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+  /template-tasks:
+    parameters:
+      - $ref: '#/components/parameters/UserId'
+      - $ref: '#/components/parameters/UserRole'
+    get:
+      operationId: listTemplateTasks
+      summary: List the standard checklist's template tasks
+      responses:
+        '200':
+          description: the template
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/TemplateTask' }
+        '401':
+          description: not authenticated
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+    post:
+      operationId: createTemplateTask
+      summary: Add a task to the standard checklist template
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/TemplateTaskInput' }
+      responses:
+        '201':
+          description: template task created
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/TemplateTask' }
+        '400':
+          description: invalid input
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '401':
+          description: not authenticated
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '403':
+          description: not permitted
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+  /template-tasks/{templateTaskId}:
+    parameters:
+      - $ref: '#/components/parameters/TemplateTaskId'
+      - $ref: '#/components/parameters/UserId'
+      - $ref: '#/components/parameters/UserRole'
+    put:
+      operationId: updateTemplateTask
+      summary: Edit a standard checklist template task
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/TemplateTaskInput' }
+      responses:
+        '200':
+          description: template task updated
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/TemplateTask' }
+        '400':
+          description: invalid input
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '401':
+          description: not authenticated
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '403':
+          description: not permitted
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '404':
+          description: no such template task
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+    delete:
+      operationId: deleteTemplateTask
+      summary: Remove a task from the standard checklist template
+      responses:
+        '204':
+          description: template task removed
+        '401':
+          description: not authenticated
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '403':
+          description: not permitted
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '404':
+          description: no such template task
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+  /notifications:
+    parameters:
+      - $ref: '#/components/parameters/UserId'
+      - $ref: '#/components/parameters/UserRole'
+    get:
+      operationId: listNotifications
+      summary: List reminder/escalation notifications for the caller's role
+      parameters:
+        - $ref: '#/components/parameters/Limit'
+        - $ref: '#/components/parameters/Offset'
+      responses:
+        '200':
+          description: page of notifications
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [count, data]
+                properties:
+                  count: { type: integer, description: total matching items }
+                  next: { type: string, nullable: true, description: relative URI of the next page }
+                  previous: { type: string, nullable: true, description: relative URI of the previous page }
+                  data:
+                    type: array
+                    items: { $ref: '#/components/schemas/Notification' }
+        '401':
+          description: not authenticated
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+  /notifications/{notificationId}/read:
+    parameters:
+      - $ref: '#/components/parameters/NotificationId'
+      - $ref: '#/components/parameters/UserId'
+      - $ref: '#/components/parameters/UserRole'
+    post:
+      operationId: markNotificationRead
+      summary: Mark a notification as read
+      responses:
+        '200':
+          description: notification marked read
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Notification' }
+        '401':
+          description: not authenticated
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '404':
+          description: no such notification
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+components:
+  securitySchemes:
+    bearerAuth: { type: http, scheme: bearer, bearerFormat: JWT }
+  parameters:
+    UserId:
+      name: X-User-Id
+      in: header
+      required: true
+      description: caller identity injected by the gateway from the validated token
+      schema: { type: string }
+    UserRole:
+      name: X-User-Role
+      in: header
+      required: true
+      description: caller role injected by the gateway (HR Coordinator, IT Staff, Facilities Staff, New Hire)
+      schema: { type: string }
+    NewHireId:
+      name: newHireId
+      in: path
+      required: true
+      schema: { type: string }
+      description: new hire identifier
+    TaskId:
+      name: taskId
+      in: path
+      required: true
+      schema: { type: string }
+      description: task identifier
+    TemplateTaskId:
+      name: templateTaskId
+      in: path
+      required: true
+      schema: { type: string }
+      description: template task identifier
+    NotificationId:
+      name: notificationId
+      in: path
+      required: true
+      schema: { type: string }
+      description: notification identifier
+    Limit:
+      name: limit
+      in: query
+      required: false
+      schema: { type: integer, default: 20, maximum: 100 }
+      description: max items to return
+    Offset:
+      name: offset
+      in: query
+      required: false
+      schema: { type: integer, default: 0 }
+      description: items to skip
+  schemas:
+    NewHireInput:
+      type: object
+      required: [name, email, startDate]
+      properties:
+        name: { type: string }
+        email: { type: string }
+        startDate: { type: string, format: date }
+    NewHire:
+      allOf:
+        - $ref: '#/components/schemas/NewHireInput'
+        - type: object
+          required: [id, status]
+          properties:
+            id: { type: string }
+            status: { type: string, enum: [in-progress, completed], description: derived from whether every task is completed }
+    TemplateTaskInput:
+      type: object
+      required: [title, department, dueOffsetDays]
+      properties:
+        title: { type: string }
+        department: { type: string, enum: [IT, HR, Facilities] }
+        dueOffsetDays: { type: integer, description: days after start date the task is due }
+    TemplateTask:
+      allOf:
+        - $ref: '#/components/schemas/TemplateTaskInput'
+        - type: object
+          required: [id]
+          properties:
+            id: { type: string }
+    Task:
+      type: object
+      required: [id, newHireId, templateTaskId, title, department, dueDate, status]
+      properties:
+        id: { type: string }
+        newHireId: { type: string }
+        templateTaskId: { type: string }
+        title: { type: string }
+        department: { type: string, enum: [IT, HR, Facilities] }
+        dueDate: { type: string, format: date }
+        status: { type: string, enum: [pending, completed, overdue] }
+        completedAt: { type: string, format: date-time, nullable: true }
+        completedBy: { type: string, nullable: true }
+    Notification:
+      type: object
+      required: [id, taskId, recipientRole, type, createdAt, read]
+      properties:
+        id: { type: string }
+        taskId: { type: string }
+        recipientRole: { type: string, enum: [IT Staff, Facilities Staff, HR Coordinator] }
+        type: { type: string, enum: [reminder, escalation] }
+        createdAt: { type: string, format: date-time }
+        read: { type: boolean }
+    Error:
+      type: object
+      required: [code, message]
+      properties:
+        code: { type: integer, description: HTTP or application error code }
+        message: { type: string, description: short human-readable label }
+        description: { type: string, description: detailed explanation }
+        moreInfo: { type: string, description: URI to documentation }
+security:
+  - bearerAuth: []
